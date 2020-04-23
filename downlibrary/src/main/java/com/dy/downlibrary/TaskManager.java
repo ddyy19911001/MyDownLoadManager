@@ -53,6 +53,27 @@ public class TaskManager {
     private HashMap<String,OnDownLoadListener> listeners=new HashMap<>();
     private int retryMaxTimes=5;//下载错误重试最大次数
     private int speedSlowRetryTimes=10;//下载速度慢，重试最大次数
+    private boolean needReDownLoad=false;//是否需要重新下载（已存在这个文件时）
+
+    public void setNeedReDownLoad(boolean needReDownLoad) {
+        this.needReDownLoad = needReDownLoad;
+    }
+
+    public void setConnTimeout(int connTimeout) {
+        this.connTimeout = connTimeout;
+    }
+
+    public void setReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
+    }
+
+    public void setRetryMaxTimes(int retryMaxTimes) {
+        this.retryMaxTimes = retryMaxTimes;
+    }
+
+    public void setSpeedSlowRetryTimes(int speedSlowRetryTimes) {
+        this.speedSlowRetryTimes = speedSlowRetryTimes;
+    }
 
     private TaskManager(){
 
@@ -185,6 +206,15 @@ public class TaskManager {
         }
     }
 
+    public void addTask(DownLoadTaskInfo taskInfo,boolean needReDownLoad){
+        try {
+            updateTaskInfo(taskInfo);
+            startDown(taskInfo,needReDownLoad);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * 开始下载
@@ -198,7 +228,25 @@ public class TaskManager {
                 if(onDownLoadListener!=null){
                     onDownLoadListener.onStart(taskInfo);
                 }
-               downLoad(taskInfo,true);
+               downLoad(taskInfo,needReDownLoad);
+            }
+        });
+
+    }
+
+    /**
+     * 开始下载
+     */
+    public void startDown(final DownLoadTaskInfo taskInfo, final boolean needD) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                taskInfo.setNowStatus(DownLoadTaskInfo.TYPE_READY);
+                updateTaskInfo(taskInfo);
+                if(onDownLoadListener!=null){
+                    onDownLoadListener.onStart(taskInfo);
+                }
+                downLoad(taskInfo,needD);
             }
         });
 

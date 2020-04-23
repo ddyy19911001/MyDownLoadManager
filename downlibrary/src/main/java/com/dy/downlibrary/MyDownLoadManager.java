@@ -26,6 +26,10 @@ public class MyDownLoadManager {
         TaskManager.getInstance().initLastData(context);
     }
 
+    //获取taskManager对象单例，可设置下载的请求配置属性
+    public TaskManager getTaskManager(){
+        return TaskManager.getInstance();
+    }
 
     /**
      * 带分隔符号的文件夹下载路径
@@ -37,6 +41,10 @@ public class MyDownLoadManager {
 
     public void addTask(DownLoadTaskInfo taskInfo){
         TaskManager.getInstance().addTask(taskInfo);
+    }
+
+    public void addTask(DownLoadTaskInfo taskInfo,boolean needReDownLoad){
+        TaskManager.getInstance().addTask(taskInfo,needReDownLoad);
     }
 
     public void stopTask(DownLoadTaskInfo taskInfo){
