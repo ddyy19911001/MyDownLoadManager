@@ -1,0 +1,2 @@
+include ':app', ':downlibrary'
+rootProject.name='DownLoadManager'
